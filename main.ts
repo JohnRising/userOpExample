@@ -5,6 +5,7 @@
 // You can view more information about this tutorial at
 // https://docs.stackup.sh/docs/get-started-with-stackup
 //
+// Enter `npx ts-node main.ts` into your terminal to run.
 
 // This example uses the userop.js library to build the transaction, but you can use any
 // library.
