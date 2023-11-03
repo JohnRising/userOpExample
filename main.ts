@@ -5,23 +5,16 @@
 // You can view more information about this tutorial at
 // https://docs.stackup.sh/docs/get-started-with-stackup
 //
-// Enter `npx ts-node main.ts` into your terminal to run.
+// Enter `npm run dev` into your terminal to run.
 
 // This example uses the userop.js library to build the transaction, but you can use any
 // library.
-import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import { Presets, Client } from "userop";
 
-// DO THIS FIRST
-//
-// Copy the example environment file `.env.example` to `.env` and add the variables.
-// You can get a free API key at https://app.stackup.sh/, but any ERC-4337 bundler or
-// paymaster service should work.
-dotenv.config();
-const signingKey = process.env.SIGNING_KEY || "";
-const rpcUrl = process.env.RPC_URL || "";
-const paymasterUrl = process.env.PAYMASTER_URL || "";
+const signingKey = "0x4337433743374337433743374337433743374337433743374337433743374337";
+const rpcUrl ="https://public.stackup.sh/api/v1/node/ethereum-sepolia";
+const paymasterUrl = ""; // Optional
 
 // This function creates the call data that will be executed. This combines the approval
 // and send call in a single transaction. You can add as many contract calls as you want
@@ -39,24 +32,21 @@ async function approveAndSendToken(
 
   const approve = {
     to: token,
-    value: ethers.constants.Zero,
     data: erc20.interface.encodeFunctionData("approve", [to, amount]),
   };
 
   const send = {
     to: token,
-    value: ethers.constants.Zero,
     data: erc20.interface.encodeFunctionData("transfer", [to, amount]),
   };
 
-  return [approve, send];
+  const callTargets = [approve.to, send.to];
+  const callData = [approve.data, send.data];
+
+  return [callTargets, callData];
 }
 
-// This function builds the User Operation and sends it to the blockchain via the ERC-4337
-// bundler network.
 async function main() {
-  // Define the kind of paymaster you want to use. If you do not want to use a paymaster,
-  // comment out these lines.
   const paymasterContext = { type: "payg" };
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     paymasterUrl,
@@ -64,12 +54,11 @@ async function main() {
   );
 
   // Initialize the User Operation
-  // Userop.js has a few presets for different smart account types to set default fields
-  // for user operations. This uses the ZeroDev Kernel contracts.
   const signer = new ethers.Wallet(signingKey);
-  var builder = await Presets.Builder.Kernel.init(signer, rpcUrl, {
+  const opts = paymasterUrl === "" ? {} : {
     paymasterMiddleware: paymasterMiddleware,
-  });
+  }
+  var builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
   const address = builder.getSender();
   console.log(`Account address: ${address}`);
 
@@ -77,11 +66,11 @@ async function main() {
   const to = address;
   const token = "0x3870419Ba2BBf0127060bCB37f69A1b1C090992B";
   const value = "0";
-  const calls = await approveAndSendToken(to, token, value);
+  const [callTargets, callData] = await approveAndSendToken(to, token, value);
 
-  // Send the User Operaiton to the ERC-4337 mempool
+  // Send the User Operation to the ERC-4337 mempool
   const client = await Client.init(rpcUrl);
-  const res = await client.sendUserOperation(builder.executeBatch(calls), {
+  const res = await client.sendUserOperation(builder.executeBatch(callTargets, callData), {
     onBuild: (op) => console.log("Signed UserOperation:", op),
   });
 
@@ -93,6 +82,7 @@ async function main() {
   console.log("Waiting for transaction...");
   const ev = await res.wait();
   console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
+  console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
 main().catch((err) => console.error("Error:", err));
