@@ -5,12 +5,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx ts-node main.ts",
+    "account-abstraction-sdk": "npx ts-node ./examples/account-abstraction-sdk-example.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@account-abstraction/contracts": "^0.6.0",
+    "@account-abstraction/sdk": "^0.6.0",
+    "axios": "^1.6.0",
     "ethers": "5.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",

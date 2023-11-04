@@ -22,7 +22,7 @@ async function main() {
     paymasterUrl,
     paymasterContext
   );
-  const opts = paymasterUrl === "" ? {} : {
+  const opts = paymasterUrl.toString() === "" ? {} : {
     paymasterMiddleware: paymasterMiddleware,
   }
 
