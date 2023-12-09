@@ -1,15 +1,3 @@
-// Welcome to the ERC-4337 tutorial #1!
-// This tutorial walks you though a simple ERC-4337 transaction: sending a User Operation
-// with gas paid by a Paymaster.
-//
-// You can view more information about this tutorial at
-// https://docs.stackup.sh/docs/get-started-with-stackup
-//
-// Enter `npm run dev` into your terminal to run.
-
-// This example uses the userop.js library to build the transaction, but you can use any
-// library.
-
 import { ethers } from "ethers";
 import { Presets, Client } from "userop";
 
