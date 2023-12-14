@@ -17,7 +17,7 @@ import { UserOperationStruct } from "@account-abstraction/contracts";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 
 const rpcUrl ="https://public.stackup.sh/api/v1/node/ethereum-goerli";
-const paymasterUrl = "https://api.stackup.sh/v1/paymaster/9e66cca810f32e887ea75fd592ec6980ca9127e3bcc748ba92d75bc6d090c7be"; // Optional
+const paymasterUrl = ""; // Optional
 
 // Extend the Ethereum Foundation's account-abstraction/sdk's basic paymaster
 class VerifyingPaymasterAPI extends PaymasterAPI {
